@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purrfect Match AR</title>
+
+    <!-- A-Frame Library -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- AR.js for Augmented Reality functionality -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <!-- Three.js for 3D rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #model-selector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        button {
+            display: block;
+            margin: 5px 0;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            background-color: #3498db;
+            color: white;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Buttons for Model Selection -->
+    <div id="model-selector">
+        <button onclick="showModel(1)">Tabby Cat</button>
+        <button onclick="showModel(2)">Calico Cat</button>
+        <button onclick="showModel(3)">Siamese Cat</button>
+    </div>
+
+    <!-- A-Frame Scene for AR -->
+    <a-scene embedded arjs>
+        <!-- Camera setup for AR -->
+        <a-camera position="0 1.6 0"></a-camera>
+
+        <!-- Tabby Cat Model (Initially hidden) -->
+        <a-entity 
+            id="model1" 
+            gltf-model="url(https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb)" 
+            scale="0.2 0.2 0.2" 
+            position="0 0 -3"
+            rotation="0 45 0"
+            visible="false">
+        </a-entity>
+
+        <!-- Calico Cat Model (Initially hidden) -->
+        <a-entity 
+            id="model2" 
+            gltf-model="url(https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20calico.glb)" 
+            scale="0.2 0.2 0.2" 
+            position="0 0 -3"
+            rotation="0 45 0"
+            visible="false">
+        </a-entity>
+
+        <!-- Siamese Cat Model (Initially hidden) -->
+        <a-entity 
+            id="model3" 
+            gltf-model="url(https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20siamese.glb)" 
+            scale="0.2 0.2 0.2" 
+            position="0 0 -3"
+            rotation="0 45 0"
+            visible="false">
+        </a-entity>
+    </a-scene>
+
+    <script>
+        function showModel(modelNumber) {
+            // Hide all models first
+            document.getElementById("model1").setAttribute("visible", "false");
+            document.getElementById("model2").setAttribute("visible", "false");
+            document.getElementById("model3").setAttribute("visible", "false");
+
+            // Show the selected model
+            if (modelNumber === 1) {
+                document.getElementById("model1").setAttribute("visible", "true");
+            } else if (modelNumber === 2) {
+                document.getElementById("model2").setAttribute("visible", "true");
+            } else if (modelNumber === 3) {
+                document.getElementById("model3").setAttribute("visible", "true");
+            }
+        }
+    </script>
+
+</body>
+</html>
