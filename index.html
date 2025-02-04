@@ -3,112 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markerless AR with 3D Cats</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js/aframe/build/aframe-ar.js"></script>
+    <title>Purrfect Match AR</title>
+
+    <!-- Include A-Frame and AR.js -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@latest/aframe/build/aframe-ar.min.js"></script>
+
+    <!-- Styles -->
     <style>
-        body { margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        h1 { text-align: center; margin-bottom: 10px; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
         .button-container {
             position: absolute;
-            top: 20px;
-            display: flex;
-            gap: 20px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 10;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
         }
-        button {
-            background-color: #6200ea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
+
+        .button-container button {
             font-size: 16px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
             border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
         }
-        button:hover {
-            background-color: #3700b3;
+
+        .button-container button:hover {
+            background-color: #0056b3;
         }
-        .ar-scene {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-        a-scene {
-            width: 100%;
-            height: 100%;
+
+        #info-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
-    <h1>Explore Our Cat Breeds in AR</h1>
 
-    <!-- Start AR Button -->
-    <button id="startARButton" onclick="startAR()">Start AR Feature</button>
-
-    <!-- Model Selection Buttons (Initially hidden) -->
-    <div id="modelButtons" class="button-container" style="display:none;">
-        <button onclick="setModel('calico')">Calico Cat</button>
-        <button onclick="setModel('siamese')">Siamese Cat</button>
-        <button onclick="setModel('tabby')">Tabby Cat</button>
+    <!-- Info Text -->
+    <div id="info-text">
+        <h2>Purrfect Match AR</h2>
+        <p>Tap and pinch to interact with the 3D cat model.</p>
     </div>
 
-    <!-- AR Scene (Initially hidden) -->
-    <div id="arScene" class="ar-scene">
-        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-            <!-- Camera -->
-            <a-camera position="0 0 0"></a-camera>
+    <!-- AR Scene -->
+    <a-scene embedded arjs>
+        <a-assets>
+            <a-asset-item id="catModel" src="your-cat-model.glb"></a-asset-item>
+        </a-assets>
 
-            <!-- 3D Models (Initially hidden) -->
-            <a-entity 
-                id="calico" 
-                gltf-model="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/4952b54ec01b5f75fd2eaefb1ccb086c926946aa/Purrfect%20Match%20cat%20calico.glb" 
-                scale="1 1 1" 
-                position="0 0 0" 
-                visible="false" 
-                animation-mixer="loop: repeat; timeScale: 1">
-            </a-entity>
+        <!-- Cat Model -->
+        <a-entity 
+            gltf-model="#catModel" 
+            position="0 0 -2"   <!-- Moves the model slightly back -->
+            scale="0.5 0.5 0.5" <!-- Adjusts the size -->
+            rotation="0 180 0"
+            gesture-handler>
+        </a-entity>
 
-            <a-entity 
-                id="siamese" 
-                gltf-model="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/4952b54ec01b5f75fd2eaefb1ccb086c926946aa/Purrfect%20Match%20cat%20siamese.glb" 
-                scale="1 1 1" 
-                position="0 0 0" 
-                visible="false" 
-                animation-mixer="loop: repeat; timeScale: 1">
-            </a-entity>
+        <!-- Camera -->
+        <a-entity camera position="0 1.5 3"></a-entity>
+    </a-scene>
 
-            <a-entity 
-                id="tabby" 
-                gltf-model="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/4952b54ec01b5f75fd2eaefb1ccb086c926946aa/Purrfect%20Match%20cat%20tabby.glb" 
-                scale="1 1 1" 
-                position="0 0 0" 
-                visible="false" 
-                animation-mixer="loop: repeat; timeScale: 1">
-            </a-entity>
-
-            <!-- Ground -->
-            <a-plane position="0 0 -5" rotation="-90 0 0" width="10" height="10" color="#CCCCCC"></a-plane>
-        </a-scene>
+    <!-- Buttons -->
+    <div class="button-container">
+        <button onclick="resetModel()">Reset Model</button>
     </div>
 
+    <!-- Gesture Handler Script -->
     <script>
-        function startAR() {
-            // Hide the "Start AR" button and show the AR scene and model selection buttons
-            document.getElementById('startARButton').style.display = 'none';
-            document.getElementById('arScene').style.display = 'block';
-            document.getElementById('modelButtons').style.display = 'flex';
-        }
+        AFRAME.registerComponent('gesture-handler', {
+            init: function () {
+                var el = this.el;
+                var pinchStartDistance = null;
+                var pinchScale = 1;
 
-        function setModel(modelType) {
-            // Hide all models first
-            document.getElementById('calico').setAttribute('visible', 'false');
-            document.getElementById('siamese').setAttribute('visible', 'false');
-            document.getElementById('tabby').setAttribute('visible', 'false');
+                document.addEventListener('touchstart', (event) => {
+                    if (event.touches.length === 2) {
+                        pinchStartDistance = Math.hypot(
+                            event.touches[0].clientX - event.touches[1].clientX,
+                            event.touches[0].clientY - event.touches[1].clientY
+                        );
+                    }
+                });
 
-            // Show the selected model
-            document.getElementById(modelType).setAttribute('visible', 'true');
+                document.addEventListener('touchmove', (event) => {
+                    if (event.touches.length === 2 && pinchStartDistance) {
+                        let newDistance = Math.hypot(
+                            event.touches[0].clientX - event.touches[1].clientX,
+                            event.touches[0].clientY - event.touches[1].clientY
+                        );
+                        pinchScale *= newDistance / pinchStartDistance;
+                        pinchStartDistance = newDistance;
+                        el.setAttribute('scale', `${pinchScale} ${pinchScale} ${pinchScale}`);
+                    }
+                });
+
+                document.addEventListener('touchend', () => {
+                    pinchStartDistance = null;
+                });
+            }
+        });
+
+        // Function to reset the model size
+        function resetModel() {
+            let model = document.querySelector('a-entity[gltf-model]');
+            model.setAttribute('scale', '0.5 0.5 0.5'); // Reset size
+            model.setAttribute('rotation', '0 180 0');  // Reset rotation
         }
     </script>
+
 </body>
 </html>
