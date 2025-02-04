@@ -15,7 +15,6 @@
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
-
     .controls {
       position: absolute;
       bottom: 20px;
@@ -29,7 +28,6 @@
       flex-direction: column;
       align-items: center;
     }
-
     .controls select,
     .controls button {
       font-size: 16px;
@@ -41,7 +39,6 @@
       cursor: pointer;
       margin: 5px;
     }
-
     .controls button:hover {
       background-color: #0056b3;
     }
@@ -49,8 +46,10 @@
 </head>
 <body>
 
-  <!-- AR Scene -->
-  <a-scene embedded arjs>
+  <!-- AR Scene without an explicit camera.
+       AR.js will initialize the AR camera automatically,
+       which is better for deploying the model into the real environment. -->
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
     <a-assets>
       <!-- 3D Models -->
       <a-asset-item id="calicoCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20calico.glb"></a-asset-item>
@@ -58,18 +57,15 @@
       <a-asset-item id="tabbyCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Cat Model (Position & Scale Fixed) -->
+    <!-- Cat Model with Interactions -->
     <a-entity 
       id="catModel"
       gltf-model="#calicoCat"
-      position="0 0 -3"
+      position="0 0 -5"         <!-- Placed 5 units in front of the default AR camera -->
       scale="1.2 1.2 1.2"
       rotation="0 180 0"
       gesture-handler>
     </a-entity>
-
-    <!-- Adjusted Camera for a Wider View -->
-    <a-entity camera position="0 1.5 10"></a-entity>
   </a-scene>
 
   <!-- UI Controls -->
