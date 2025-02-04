@@ -57,18 +57,18 @@
             <a-asset-item id="tabbyCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb"></a-asset-item>
         </a-assets>
 
-        <!-- Cat Model with Gestures -->
+        <!-- Cat Model (Position & Scale Fixed) -->
         <a-entity 
             id="catModel"
             gltf-model="#calicoCat"
-            position="0 0 -2"
-            scale="0.5 0.5 0.5"
+            position="0 0 -3"  <!-- Adjusted for better visibility -->
+            scale="1.2 1.2 1.2"  <!-- Enlarged for better view -->
             rotation="0 180 0"
             gesture-handler>
         </a-entity>
 
-        <!-- Fixed Camera -->
-        <a-entity camera position="0 1.5 3"></a-entity>
+        <!-- Adjusted Camera for Better View -->
+        <a-entity camera position="0 1.5 5"></a-entity>
     </a-scene>
 
     <!-- UI Controls -->
@@ -139,7 +139,7 @@
         // Reset Model Function
         function resetModel() {
             let model = document.querySelector('#catModel');
-            model.setAttribute('scale', '0.5 0.5 0.5');
+            model.setAttribute('scale', '1.2 1.2 1.2');
             model.setAttribute('rotation', '0 180 0');
         }
     </script>
