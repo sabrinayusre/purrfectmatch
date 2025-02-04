@@ -46,9 +46,9 @@
 </head>
 <body>
 
-  <!-- AR Scene using AR.js with no custom camera settings -->
-  <!-- AR.js will automatically initialize a proper AR camera for your device -->
-  <a-scene arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+  <!-- AR Scene using AR.js (no custom camera so that AR.js can set it up for the device) -->
+  <!-- We attach our custom "touch-placement" component to the scene -->
+  <a-scene arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" touch-placement>
     <a-assets>
       <!-- 3D Models -->
       <a-asset-item id="calicoCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20calico.glb"></a-asset-item>
@@ -56,11 +56,11 @@
       <a-asset-item id="tabbyCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Cat Model placed further away for a natural scale -->
+    <!-- Cat Model with Interactions -->
     <a-entity 
       id="catModel"
       gltf-model="#calicoCat"
-      position="0 0 -10"  <!-- Moved further back along the Z-axis -->
+      position="0 0 -10"  <!-- Initial position -->
       scale="1.2 1.2 1.2"
       rotation="0 180 0"
       gesture-handler>
@@ -77,7 +77,7 @@
     <button onclick="resetModel()">Reset Model</button>
   </div>
 
-  <!-- Gesture Handler Script -->
+  <!-- Gesture Handler Script (for pinch-to-zoom & drag-to-rotate) -->
   <script>
     AFRAME.registerComponent('gesture-handler', {
       init: function () {
@@ -86,7 +86,7 @@
         var pinchScale = 1;
         var lastRotation = null;
 
-        document.addEventListener('touchstart', (event) => {
+        document.addEventListener('touchstart', function (event) {
           if (event.touches.length === 2) {
             pinchStartDistance = Math.hypot(
               event.touches[0].clientX - event.touches[1].clientX,
@@ -97,7 +97,7 @@
           }
         });
 
-        document.addEventListener('touchmove', (event) => {
+        document.addEventListener('touchmove', function (event) {
           if (event.touches.length === 2 && pinchStartDistance) {
             let newDistance = Math.hypot(
               event.touches[0].clientX - event.touches[1].clientX,
@@ -118,21 +118,66 @@
           }
         });
 
-        document.addEventListener('touchend', () => {
+        document.addEventListener('touchend', function () {
           pinchStartDistance = null;
           lastRotation = null;
         });
       }
     });
+  </script>
 
-    // Function to change the 3D model based on user selection
+  <!-- Touch Placement Component: positions the cat model where the user taps -->
+  <script>
+    AFRAME.registerComponent('touch-placement', {
+      init: function () {
+        const sceneEl = this.el;
+        // Wait until the canvas is loaded.
+        sceneEl.addEventListener('renderstart', function () {
+          const canvas = sceneEl.canvas;
+          if (!canvas) {
+            console.error('Canvas not available!');
+            return;
+          }
+          // Listen for click events on the canvas.
+          canvas.addEventListener('click', function (event) {
+            // Calculate normalized device coordinates (NDC) from touch/click.
+            const rect = canvas.getBoundingClientRect();
+            const mouse = new THREE.Vector2(
+              ((event.clientX - rect.left) / rect.width) * 2 - 1,
+              - ((event.clientY - rect.top) / rect.height) * 2 + 1
+            );
+            
+            // Get the current camera from the scene.
+            const camera = sceneEl.camera;
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // Define a horizontal plane at y=0 (the "ground").
+            const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+            const intersectionPoint = new THREE.Vector3();
+            const intersect = raycaster.ray.intersectPlane(groundPlane, intersectionPoint);
+            if (intersect) {
+              // Update the cat model's position to the intersection point.
+              const model = document.getElementById('catModel');
+              // Optionally, adjust the y-coordinate if needed.
+              model.setAttribute('position', intersectionPoint);
+            }
+          });
+        });
+      }
+    });
+  </script>
+
+  <!-- Functions to Change and Reset the Model -->
+  <script>
+    // Change 3D Model Function
     function changeModel() {
       let selectedModel = document.getElementById('catSelector').value;
       let model = document.getElementById('catModel');
       model.setAttribute('gltf-model', `#${selectedModel}`);
     }
 
-    // Function to reset the model's scale and rotation
+    // Reset Model Function
     function resetModel() {
       let model = document.querySelector('#catModel');
       model.setAttribute('scale', '1.2 1.2 1.2');
