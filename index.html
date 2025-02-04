@@ -21,7 +21,7 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255,255,255,0.9);
       padding: 10px;
       border-radius: 10px;
       display: flex;
@@ -46,10 +46,9 @@
 </head>
 <body>
 
-  <!-- AR Scene without an explicit camera.
-       AR.js will initialize the AR camera automatically,
-       which is better for deploying the model into the real environment. -->
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+  <!-- AR Scene using AR.js with no custom camera settings -->
+  <!-- AR.js will automatically initialize a proper AR camera for your device -->
+  <a-scene arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
     <a-assets>
       <!-- 3D Models -->
       <a-asset-item id="calicoCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20calico.glb"></a-asset-item>
@@ -57,11 +56,11 @@
       <a-asset-item id="tabbyCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Cat Model with Interactions -->
+    <!-- Cat Model placed further away for a natural scale -->
     <a-entity 
       id="catModel"
       gltf-model="#calicoCat"
-      position="0 0 -5"         <!-- Placed 5 units in front of the default AR camera -->
+      position="0 0 -10"  <!-- Moved further back along the Z-axis -->
       scale="1.2 1.2 1.2"
       rotation="0 180 0"
       gesture-handler>
@@ -126,14 +125,14 @@
       }
     });
 
-    // Change 3D Model Function
+    // Function to change the 3D model based on user selection
     function changeModel() {
       let selectedModel = document.getElementById('catSelector').value;
       let model = document.getElementById('catModel');
       model.setAttribute('gltf-model', `#${selectedModel}`);
     }
 
-    // Reset Model Function
+    // Function to reset the model's scale and rotation
     function resetModel() {
       let model = document.querySelector('#catModel');
       model.setAttribute('scale', '1.2 1.2 1.2');
