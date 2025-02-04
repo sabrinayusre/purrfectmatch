@@ -1,148 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purrfect Match AR</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Purrfect Match AR</title>
 
-    <!-- A-Frame & AR.js -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js@latest/aframe/build/aframe-ar.min.js"></script>
+  <!-- A-Frame & AR.js -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@latest/aframe/build/aframe-ar.min.js"></script>
 
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
 
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        .controls select, .controls button {
-            font-size: 16px;
-            padding: 8px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-        }
+    .controls select,
+    .controls button {
+      font-size: 16px;
+      padding: 8px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
 
-        .controls button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    .controls button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- AR Scene -->
-    <a-scene embedded arjs>
-        <a-assets>
-            <!-- 3D Models -->
-            <a-asset-item id="calicoCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20calico.glb"></a-asset-item>
-            <a-asset-item id="siameseCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20siamese.glb"></a-asset-item>
-            <a-asset-item id="tabbyCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb"></a-asset-item>
-        </a-assets>
+  <!-- AR Scene -->
+  <a-scene embedded arjs>
+    <a-assets>
+      <!-- 3D Models -->
+      <a-asset-item id="calicoCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20calico.glb"></a-asset-item>
+      <a-asset-item id="siameseCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20siamese.glb"></a-asset-item>
+      <a-asset-item id="tabbyCat" src="https://raw.githubusercontent.com/sabrinayusre/purrfectmatch/main/Purrfect%20Match%20cat%20tabby.glb"></a-asset-item>
+    </a-assets>
 
-        <!-- Cat Model (Position & Scale Fixed) -->
-        <a-entity 
-            id="catModel"
-            gltf-model="#calicoCat"
-            position="0 0 -3"  <!-- Adjusted for better visibility -->
-            scale="1.2 1.2 1.2"  <!-- Enlarged for better view -->
-            rotation="0 180 0"
-            gesture-handler>
-        </a-entity>
+    <!-- Cat Model (Position & Scale Fixed) -->
+    <a-entity 
+      id="catModel"
+      gltf-model="#calicoCat"
+      position="0 0 -3"
+      scale="1.2 1.2 1.2"
+      rotation="0 180 0"
+      gesture-handler>
+    </a-entity>
 
-        <!-- Adjusted Camera for Better View -->
-        <a-entity camera position="0 1.5 5"></a-entity>
-    </a-scene>
+    <!-- Adjusted Camera for a Wider View -->
+    <a-entity camera position="0 1.5 10"></a-entity>
+  </a-scene>
 
-    <!-- UI Controls -->
-    <div class="controls">
-        <select id="catSelector" onchange="changeModel()">
-            <option value="calicoCat">Calico Cat</option>
-            <option value="siameseCat">Siamese Cat</option>
-            <option value="tabbyCat">Tabby Cat</option>
-        </select>
-        <button onclick="resetModel()">Reset Model</button>
-    </div>
+  <!-- UI Controls -->
+  <div class="controls">
+    <select id="catSelector" onchange="changeModel()">
+      <option value="calicoCat">Calico Cat</option>
+      <option value="siameseCat">Siamese Cat</option>
+      <option value="tabbyCat">Tabby Cat</option>
+    </select>
+    <button onclick="resetModel()">Reset Model</button>
+  </div>
 
-    <!-- Gesture Handler Script -->
-    <script>
-        AFRAME.registerComponent('gesture-handler', {
-            init: function () {
-                var el = this.el;
-                var pinchStartDistance = null;
-                var pinchScale = 1;
-                var lastRotation = null;
+  <!-- Gesture Handler Script -->
+  <script>
+    AFRAME.registerComponent('gesture-handler', {
+      init: function () {
+        var el = this.el;
+        var pinchStartDistance = null;
+        var pinchScale = 1;
+        var lastRotation = null;
 
-                document.addEventListener('touchstart', (event) => {
-                    if (event.touches.length === 2) {
-                        pinchStartDistance = Math.hypot(
-                            event.touches[0].clientX - event.touches[1].clientX,
-                            event.touches[0].clientY - event.touches[1].clientY
-                        );
-                    } else if (event.touches.length === 1) {
-                        lastRotation = event.touches[0].clientX;
-                    }
-                });
-
-                document.addEventListener('touchmove', (event) => {
-                    if (event.touches.length === 2 && pinchStartDistance) {
-                        let newDistance = Math.hypot(
-                            event.touches[0].clientX - event.touches[1].clientX,
-                            event.touches[0].clientY - event.touches[1].clientY
-                        );
-                        pinchScale *= newDistance / pinchStartDistance;
-                        pinchStartDistance = newDistance;
-                        el.setAttribute('scale', `${pinchScale} ${pinchScale} ${pinchScale}`);
-                    } else if (event.touches.length === 1 && lastRotation !== null) {
-                        let deltaX = event.touches[0].clientX - lastRotation;
-                        let currentRotation = el.getAttribute('rotation');
-                        el.setAttribute('rotation', {
-                            x: currentRotation.x,
-                            y: currentRotation.y + deltaX * 0.5,
-                            z: currentRotation.z
-                        });
-                        lastRotation = event.touches[0].clientX;
-                    }
-                });
-
-                document.addEventListener('touchend', () => {
-                    pinchStartDistance = null;
-                    lastRotation = null;
-                });
-            }
+        document.addEventListener('touchstart', (event) => {
+          if (event.touches.length === 2) {
+            pinchStartDistance = Math.hypot(
+              event.touches[0].clientX - event.touches[1].clientX,
+              event.touches[0].clientY - event.touches[1].clientY
+            );
+          } else if (event.touches.length === 1) {
+            lastRotation = event.touches[0].clientX;
+          }
         });
 
-        // Change 3D Model Function
-        function changeModel() {
-            let selectedModel = document.getElementById('catSelector').value;
-            let model = document.getElementById('catModel');
-            model.setAttribute('gltf-model', `#${selectedModel}`);
-        }
+        document.addEventListener('touchmove', (event) => {
+          if (event.touches.length === 2 && pinchStartDistance) {
+            let newDistance = Math.hypot(
+              event.touches[0].clientX - event.touches[1].clientX,
+              event.touches[0].clientY - event.touches[1].clientY
+            );
+            pinchScale *= newDistance / pinchStartDistance;
+            pinchStartDistance = newDistance;
+            el.setAttribute('scale', `${pinchScale} ${pinchScale} ${pinchScale}`);
+          } else if (event.touches.length === 1 && lastRotation !== null) {
+            let deltaX = event.touches[0].clientX - lastRotation;
+            let currentRotation = el.getAttribute('rotation');
+            el.setAttribute('rotation', {
+              x: currentRotation.x,
+              y: currentRotation.y + deltaX * 0.5,
+              z: currentRotation.z
+            });
+            lastRotation = event.touches[0].clientX;
+          }
+        });
 
-        // Reset Model Function
-        function resetModel() {
-            let model = document.querySelector('#catModel');
-            model.setAttribute('scale', '1.2 1.2 1.2');
-            model.setAttribute('rotation', '0 180 0');
-        }
-    </script>
+        document.addEventListener('touchend', () => {
+          pinchStartDistance = null;
+          lastRotation = null;
+        });
+      }
+    });
+
+    // Change 3D Model Function
+    function changeModel() {
+      let selectedModel = document.getElementById('catSelector').value;
+      let model = document.getElementById('catModel');
+      model.setAttribute('gltf-model', `#${selectedModel}`);
+    }
+
+    // Reset Model Function
+    function resetModel() {
+      let model = document.querySelector('#catModel');
+      model.setAttribute('scale', '1.2 1.2 1.2');
+      model.setAttribute('rotation', '0 180 0');
+    }
+  </script>
 
 </body>
 </html>
